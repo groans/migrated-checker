@@ -39,15 +39,36 @@ def checkMigration(name, uuid, proxy):
 	except (KeyError, IndexError):
 		print("(" + str(attempt) + "/" + str(total) + "| " + str(percentage) + "%) Checking " + name + " for unmigrated status... [" + colored("MIGRATED", "red") + "] Proxy: " + proxy)
 
+def checkAvailability(name, proxy, i=[0]):
+	attempt = num + 1
+	percentage = round(attempt / total, 3)
+	percentage = percentage * 100
+	try:
+		i[0] = 0
+		urlResponse = requests.get(uuidURL + name, proxies={"http": "http://"+proxy, "https": "https://"+proxy}, timeout=10).json()
+		print("(" + str(attempt) + "/" + str(total) + "| " + str(percentage) + "%) Checking " + name + " for unmigrated status... [" + colored("TAKEN", "red") + "] Proxy: " + proxy)
+	except (ValueError, KeyError, IndexError):
+		i[0] = 0
+		print("(" + str(attempt) + "/" + str(total) + "| " + str(percentage) + "%) Checking " + name + " for unmigrated status... [" + colored("AVAILABLE", "green") + "] Proxy: " + proxy)
+		file = open("available.txt", "a")
+		file.write(name+"\n")
+		file.close()
+	except (ConnectionError, OSError):
+		i[0]+=1
+		if i[0] == len(proxies):
+			sys.exit("No proxies could establish a connection. Try new proxies and a larger proxylist.")
+		#print("Proxy error (rate limited?). Cycling proxy.")
+		checkAvailability(name, getWorkingProxy())
+
 def getUUID(name, proxy, i=[0]):
 	attempt = num + 1
 	percentage = round(attempt / total, 3)
 	percentage = percentage * 100
 	try:
+		i[0] = 0
 		urlResponse = requests.get(uuidURL + name, proxies={"http": "http://"+proxy, "https": "https://"+proxy}, timeout=10).json()
 		uuid = urlResponse["id"]
 		checkMigration(name, uuid, proxy)
-		i[0] = 0
 	except (ValueError, KeyError, IndexError):
 		i[0] = 0
 		print("(" + str(attempt) + "/" + str(total) + "| " + str(percentage) + "%) Checking " + name + " for unmigrated status... [" + colored("INVALID", "red") + "] Proxy: " + proxy)
@@ -75,11 +96,25 @@ if __name__ == '__main__':
 	print("")
 	print(colored("All usernames loaded! (accounts.txt)", "green"))
 	print(colored("All proxies loaded! (proxies.txt)", "green"))
-	for name in names:
-	  thread_list.append(Thread(target=getUUID, args=(name, getWorkingProxy())))
-	  thread_list[len(thread_list)-1].start()
-	  count += 1
-	  num += 1
-	for x in thread_list:
-	  x.join()
-	print("Completed.")
+	print("")
+	type = input("Do you want to check availability or migration status?\n'1' for availability.\n'2' for migration status.\n ")
+	if type == str("1"):
+		for name in names:
+			thread_list.append(Thread(target=checkAvailability, args=(name, getWorkingProxy())))
+			thread_list[len(thread_list)-1].start()
+			count += 1
+			num += 1
+		for x in thread_list:
+			x.join()
+		print("Completed.")
+	elif type == str("2"):
+		for name in names:
+			thread_list.append(Thread(target=getUUID, args=(name, getWorkingProxy())))
+			thread_list[len(thread_list)-1].start()
+			count += 1
+			num += 1
+		for x in thread_list:
+			x.join()
+		print("Completed.")
+	else:
+		exit
