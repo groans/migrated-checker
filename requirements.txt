@@ -1,3 +1,4 @@
 termcolor
 threading
 itertools
+urllib3
