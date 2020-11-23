@@ -46,10 +46,10 @@ def checkAvailability(name, proxy, i=[0]):
 	try:
 		i[0] = 0
 		urlResponse = requests.get(uuidURL + name, proxies={"http": "http://"+proxy, "https": "https://"+proxy}, timeout=10).json()
-		print("(" + str(attempt) + "/" + str(total) + "| " + str(percentage) + "%) Checking " + name + " for unmigrated status... [" + colored("TAKEN", "red") + "] Proxy: " + proxy)
+		print("(" + str(attempt) + "/" + str(total) + "| " + str(percentage) + "%) Checking " + name + " for availability status... [" + colored("TAKEN", "red") + "] Proxy: " + proxy)
 	except (ValueError, KeyError, IndexError):
 		i[0] = 0
-		print("(" + str(attempt) + "/" + str(total) + "| " + str(percentage) + "%) Checking " + name + " for unmigrated status... [" + colored("AVAILABLE", "green") + "] Proxy: " + proxy)
+		print("(" + str(attempt) + "/" + str(total) + "| " + str(percentage) + "%) Checking " + name + " for availability status... [" + colored("AVAILABLE", "green") + "] Proxy: " + proxy)
 		file = open("available.txt", "a")
 		file.write(name+"\n")
 		file.close()
@@ -91,7 +91,7 @@ if __name__ == '__main__':
 	thread_list = []
 	count = 0
 	print("")
-	print("Checking all cape accounts for 'unmigrated' status...")
+	print("Checking accounts for 'unmigrated' status...")
 	print("Made by Landon. Landon#1718, @Religion on MC-Market.")
 	print("")
 	print(colored("All usernames loaded! (accounts.txt)", "green"))
