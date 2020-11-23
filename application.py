@@ -88,13 +88,13 @@ def getUUID(name, proxy, i=[0]):
 	percentage = round(attempt / total, 3)
 	percentage = percentage * 100
 	try:
-		i[0] = 0
 		urlResponse = requests.get(uuidURL + name, proxies={"http": "http://"+proxy, "https": "https://"+proxy}, timeout=10).json()
 		uuid = urlResponse["id"]
 		checkMigration(name, uuid, proxy)
-	except (ValueError, KeyError, IndexError):
 		i[0] = 0
+	except (ValueError, KeyError, IndexError):
 		print("(" + str(attempt) + "/" + str(total) + "| " + str(percentage) + "%) Checking " + name + " for unmigrated status... [" + colored("INVALID", "red") + "] Proxy: " + proxy)
+		i[0] = 0
 	except (ConnectionError, OSError):
 		i[0]+=1
 		if i[0] == len(proxies):
