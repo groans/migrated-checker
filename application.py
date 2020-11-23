@@ -114,13 +114,13 @@ if __name__ == '__main__':
 	thread_list = []
 	count = 0
 	print("")
-	print("Checking accounts for 'unmigrated' status...")
+	print("Username Tools v1.2.")
 	print("Made by Landon. Landon#1718, @Religion on MC-Market.")
 	print("")
 	print(colored("All usernames loaded! (accounts.txt)", "green"))
 	print(colored("All proxies loaded! (proxies.txt)", "green"))
 	print("")
-	type = input("Do you want to check availability or migration status?\n'1' for availability.\n'2' for migration status.\n'3' for UUIDs.\n ")
+	type = input("Please select a mode.\n'1' for availability.\n'2' for migration status.\n'3' for UUIDs.\n ")
 	if type == str("1"):
 		for name in names:
 			thread_list.append(Thread(target=checkAvailability, args=(name, getWorkingProxy())))
